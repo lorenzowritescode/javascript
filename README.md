@@ -25,9 +25,12 @@
   1. [Naming Conventions](#naming-conventions)
   1. [Accessors](#accessors)
   1. [Constructors](#constructors)
-  1. [Events](#events)
-  1. [Modules](#modules)
-  1. [jQuery](#jquery)
+  1. [Prototype](#prototype)
+  1. [Function Context](#context)
+  1. [Angular](#angular)
+  1. [Angular - Controllers](#angular-controllers)
+  1. [Angular - Services/Factories/Providers](#angular-providers)
+  1. [Angular - Directives/Filters/Constants](#angular-directives)
   1. [ECMAScript 5 Compatibility](#ecmascript-5-compatibility)
   1. [Testing](#testing)
   1. [Performance](#performance)
@@ -100,6 +103,14 @@
       defaults: { clark: 'kent' },
       hidden: true
     };
+
+    // bad
+    service.getRestaunrant()
+      .catch(function() {});
+
+    // good
+    service.getRestaunrant()
+      ['catch'](function() {});
     ```
 
   - Use readable synonyms in place of reserved words.
@@ -151,12 +162,11 @@
   - When you need to copy an array use Array#slice. [jsPerf](http://jsperf.com/converting-arguments-to-an-array/7)
 
     ```javascript
-    var len = items.length,
-        itemsCopy = [],
-        i;
+    var len = items.length;
+    var itemsCopy = [];
 
     // bad
-    for (i = 0; i < len; i++) {
+    for (var i = 0; i < len; i++) {
       itemsCopy[i] = items[i];
     }
 
@@ -216,12 +226,7 @@
   - When programmatically building up a string, use Array#join instead of string concatenation. Mostly for IE: [jsPerf](http://jsperf.com/string-vs-array-concat/2).
 
     ```javascript
-    var items,
-        messages,
-        length,
-        i;
-
-    messages = [{
+    var messages = [{
       state: 'success',
       message: 'This one worked.'
     }, {
@@ -231,14 +236,13 @@
       state: 'error',
       message: 'This one did not work.'
     }];
-
-    length = messages.length;
+    var length = messages.length;
 
     // bad
     function inbox(messages) {
-      items = '<ul>';
+      var items = '<ul>';
 
-      for (i = 0; i < length; i++) {
+      for (var i = 0; i < length; i++) {
         items += '<li>' + messages[i].message + '</li>';
       }
 
@@ -247,9 +251,9 @@
 
     // good
     function inbox(messages) {
-      items = [];
+      var items = [];
 
-      for (i = 0; i < length; i++) {
+      for (var i = 0; i < length; i++) {
         items[i] = messages[i].message;
       }
 
@@ -1265,130 +1269,66 @@
 
 **[⬆ back to top](#table-of-contents)**
 
+## Function Context
 
-## Events
-
-  - When attaching data payloads to events (whether DOM events or something more proprietary like Backbone events), pass a hash instead of a raw value. This allows a subsequent contributor to add more data to the event payload without finding and updating every handler for the event. For example, instead of:
-
-    ```js
-    // bad
-    $(this).trigger('listingUpdated', listing.id);
-
-    ...
-
-    $(this).on('listingUpdated', function(e, listingId) {
-      // do something with listingId
-    });
-    ```
-
-    prefer:
-
-    ```js
-    // good
-    $(this).trigger('listingUpdated', { listingId : listing.id });
-
-    ...
-
-    $(this).on('listingUpdated', function(e, data) {
-      // do something with data.listingId
-    });
-    ```
-
-  **[⬆ back to top](#table-of-contents)**
-
-
-## Modules
-
-  - The module should start with a `!`. This ensures that if a malformed module forgets to include a final semicolon there aren't errors in production when the scripts get concatenated. [Explanation](https://github.com/airbnb/javascript/issues/44#issuecomment-13063933)
-  - The file should be named with camelCase, live in a folder with the same name, and match the name of the single export.
-  - Add a method called `noConflict()` that sets the exported module to the previous version and returns this one.
-  - Always declare `'use strict';` at the top of the module.
+ - One of the reasons people generally stay away from the 'this' keyword in javascript is the context of a function can change depending on how the function was called.
 
     ```javascript
-    // fancyInput/fancyInput.js
+    var Order = {
+      add: function add(product) {
+        this.products.push(product);
+      },
+      products: []
+    };
 
-    !function(global) {
-      'use strict';
+    // bad
+    add({ name: 'swiss cheese'});
+    
+    // good 
+    Order.add({ name: 'grilled cheese' });
+    ```
+- Events will usually not call a callback function with its own context, it will use Window, or the event as context.
 
-      var previousFancyInput = global.FancyInput;
-
-      function FancyInput(options) {
-        this.options = options || {};
+  ```javascript
+    var orderSetup = {
+      updateForm: function() {
+        this.times = this.times.slice();
       }
-
-      FancyInput.noConflict = function noConflict() {
-        global.FancyInput = previousFancyInput;
-        return FancyInput;
-      };
-
-      global.FancyInput = FancyInput;
-    }(this);
-    ```
+    };
+  
+    // bad
+    $scope.$on('user:logout', orderSetup.updateForm);
+    
+    // good
+    $scope.$on('user:logout', function() {
+      orderSetup.updateForm();
+    });
+  ```
 
 **[⬆ back to top](#table-of-contents)**
 
+## Angular
 
-## jQuery
+Angular is a framework built in Google and used all over the web. 
 
-  - Prefix jQuery object variables with a `$`.
+Some good resources:
+- [angular docs](https://docs.angularjs.org/api)
 
-    ```javascript
-    // bad
-    var sidebar = $('.sidebar');
-
-    // good
-    var $sidebar = $('.sidebar');
-    ```
-
-  - Cache jQuery lookups.
-
-    ```javascript
-    // bad
-    function setSidebar() {
-      $('.sidebar').hide();
-
-      // ...stuff...
-
-      $('.sidebar').css({
-        'background-color': 'pink'
-      });
-    }
-
-    // good
-    function setSidebar() {
-      var $sidebar = $('.sidebar');
-      $sidebar.hide();
-
-      // ...stuff...
-
-      $sidebar.css({
-        'background-color': 'pink'
-      });
-    }
-    ```
-
-  - For DOM queries use Cascading `$('.sidebar ul')` or parent > child `$('.sidebar > ul')`. [jsPerf](http://jsperf.com/jquery-find-vs-context-sel/16)
-  - Use `find` with scoped jQuery object queries.
-
-    ```javascript
-    // bad
-    $('ul', '.sidebar').hide();
-
-    // bad
-    $('.sidebar').find('ul').hide();
-
-    // good
-    $('.sidebar ul').hide();
-
-    // good
-    $('.sidebar > ul').hide();
-
-    // good
-    $sidebar.find('ul').hide();
-    ```
+Keep in mind angular examples will not nessicarily use our style guide (specifically, how dependencies are set). Make sure you read through this document and understand how we do angular. 
 
 **[⬆ back to top](#table-of-contents)**
 
+## Angular Controllers
+
+**[⬆ back to top](#table-of-contents)**
+
+## Angular Services/Factories/Providers
+
+**[⬆ back to top](#table-of-contents)**
+
+## Function Context
+
+**[⬆ back to top](#table-of-contents)**
 
 ## ECMAScript 5 Compatibility
 
