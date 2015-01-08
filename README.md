@@ -1324,6 +1324,37 @@ Keep in mind angular examples will not nessicarily use our style guide (specific
 
 ## Angular Services/Factories/Providers
 
+We generally only use services or providers. Both are singletons, as in there is only one copy for each application. The big difference is that providers allow for setup in the config stage of the application bootstraping. This lets us set values on the provider, and customize them for the application. We use this in a series of different situations.
+
+  ```javascript
+    // Service
+    angular.module('app').service('exampleService', ['dependency',function(dependency) {
+      return {};
+    });
+    
+    angular.module('app').provider('configService', function() {
+      var config = {};
+      this.config = function(_config) {
+        config = _config;
+      };
+      
+      this.$get = ['dependency', function(dependency) {
+        return {};
+      }];
+    });
+  ```
+Usage:
+
+  ```javascript
+    angular.module('controllers')
+    .config(['configServiceProvider', function(configServiceProvider) {
+      configServiceProvider.config({});
+    }])
+    .controller('exampleCtrl', ['exampleService', 'configService', function(exampleService, configService){
+    
+    }]);
+  ```
+
 **[⬆ back to top](#table-of-contents)**
 
 ## Function Context
