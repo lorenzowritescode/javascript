@@ -1320,6 +1320,15 @@ Keep in mind angular examples will not nessicarily use our style guide (specific
 
 ## Angular Controllers
 
+  ```javascript
+    angular.module('app').controller('orderSetupCtrl',['$scope', 'dependency', function($scope, dependency) {
+      $scope.func = function() {};
+    }]);
+  ```
+Naming:
+
+Controller names should match the state they are in or what they do. They should all be affixed with 'Ctrl'. 
+
 **[⬆ back to top](#table-of-contents)**
 
 ## Angular Services/Factories/Providers
@@ -1355,7 +1364,65 @@ Usage:
     }]);
   ```
 
+Naming:
+
+Service and provider names are always camel case, and do not include service or provider in the name. 
+
 **[⬆ back to top](#table-of-contents)**
+
+## Angular Forms
+
+Angular's true power shines through when creating complex forms. 
+  ```HTML
+    <div ng-form="orderSetupForm">
+      <h3>Order Setup</h3>
+      
+      <div ono-form-errors="orderSetupForm"></div>
+      
+      <label>
+        Menu Type
+        <select ng-options="menu in values.menuTypes" ng-model="menuType"></select>
+      </label>
+      
+      <button ng-click="orderSetupForm.$submit()">submit</button>
+      <button ng-click="goBack()">cancel</button>
+    </div>
+  ```
+  ```javascript
+    // Service
+    angular.module('app').service('exampleService', ['dependency',function(dependency) {
+      return {};
+    });
+    
+    angular.module('app').provider('configService', function() {
+      var config = {};
+      this.config = function(_config) {
+        config = _config;
+      };
+      
+      this.$get = ['dependency', function(dependency) {
+        return {};
+      }];
+    });
+  ```
+Usage:
+
+  ```javascript
+    angular.module('controllers')
+    .config(['configServiceProvider', function(configServiceProvider) {
+      configServiceProvider.config({});
+    }])
+    .controller('exampleCtrl', ['exampleService', 'configService', function(exampleService, configService){
+    
+    }]);
+  ```
+
+Naming:
+
+Service and provider names are always camel case, and do not include service or provider in the name. 
+
+**[⬆ back to top](#table-of-contents)**
+
 
 ## Function Context
 
