@@ -731,10 +731,10 @@
 
 ## Whitespace
 
-  - Use soft tabs set to 2 spaces
+  - Use soft tabs set to 4 spaces. Generally, Visual Studio will take care of this, but if you are adding code try to keep to this standard. 
 
     ```javascript
-    // bad
+    // good
     function() {
     ∙∙∙∙var name;
     }
@@ -744,7 +744,7 @@
     ∙var name;
     }
 
-    // good
+    // bad
     function() {
     ∙∙var name;
     }
@@ -1114,20 +1114,6 @@
     }
     ```
 
-  - Name your functions. This is helpful for stack traces.
-
-    ```javascript
-    // bad
-    var log = function(msg) {
-      console.log(msg);
-    };
-
-    // good
-    var log = function log(msg) {
-      console.log(msg);
-    };
-    ```
-
   - **Note:** IE8 and below exhibit some quirks with named function expressions.  See [http://kangax.github.io/nfe/](http://kangax.github.io/nfe/) for more info.
 
 **[⬆ back to top](#table-of-contents)**
@@ -1316,7 +1302,7 @@ Angular is a framework built in Google and used all over the web.
 Some good resources:
 - [angular docs](https://docs.angularjs.org/api)
 
-Keep in mind angular examples will not nessicarily use our style guide (specifically, how dependencies are set). Make sure you read through this document and understand how we do angular. 
+Keep in mind angular examples will not necessarily use our style guide (specifically, how dependencies are set). Make sure you read through this document and understand how we do angular. 
 
 **[⬆ back to top](#table-of-contents)**
 
@@ -1324,18 +1310,53 @@ Keep in mind angular examples will not nessicarily use our style guide (specific
 
   ```javascript
     angular.module('app').controller('orderSetupCtrl',['$scope', 'dependency', function($scope, dependency) {
+      this.method = function() {};
+
       $scope.func = function() {};
     }]);
   ```
 Naming:
 
-Controller names should match the state they are in or what they do. They should all be affixed with 'Ctrl'. 
+Controller names should match the state they are in or a model they hold business logic for. They should all be affixed with 'Ctrl'. 
 
 **[⬆ back to top](#table-of-contents)**
 
 ## Angular Services/Factories/Providers
 
 We generally only use services or providers. Both are singletons, as in there is only one copy for each application. The big difference is that providers allow for setup in the config stage of the application bootstraping. This lets us set values on the provider, and customize them for the application. We use this in a series of different situations.
+
+  ```javascript
+    // Service
+    angular.module('app').service('exampleService', ['dependency',function(dependency) {
+      return {};
+    });
+    
+    angular.module('app').provider('configService', function() {
+      var config = {};
+      this.config = function(_config) {
+        config = _config;
+      };
+      
+      this.$get = ['dependency', function(dependency) {
+        return {};
+      }];
+    });
+  ```
+Usage:
+
+  ```javascript
+    angular.module('controllers')
+    .config(['configServiceProvider', function(configServiceProvider) {
+      configServiceProvider.config({});
+    }])
+    .controller('exampleCtrl', ['exampleService', 'configService', function(exampleService, configService){
+    
+    }]);
+  ```
+
+Naming:
+
+Service and provider names are always camel case, and do not include service or provider in the name. 
 
   ```javascript
     // Service
@@ -1379,7 +1400,7 @@ Angular's true power shines through when creating complex forms.
     <div ng-form="orderSetupForm">
       <h3>Order Setup</h3>
       
-      <div ono-form-errors="orderSetupForm"></div>
+      <div ono-form-errors></div>
       
       <label>
         Menu Type
@@ -1390,41 +1411,8 @@ Angular's true power shines through when creating complex forms.
       <button ng-click="goBack()">cancel</button>
     </div>
   ```
-  ```javascript
-    // Service
-    angular.module('app').service('exampleService', ['dependency',function(dependency) {
-      return {};
-    });
-    
-    angular.module('app').provider('configService', function() {
-      var config = {};
-      this.config = function(_config) {
-        config = _config;
-      };
-      
-      this.$get = ['dependency', function(dependency) {
-        return {};
-      }];
-    });
-  ```
-Usage:
-
-  ```javascript
-    angular.module('controllers')
-    .config(['configServiceProvider', function(configServiceProvider) {
-      configServiceProvider.config({});
-    }])
-    .controller('exampleCtrl', ['exampleService', 'configService', function(exampleService, configService){
-    
-    }]);
-  ```
-
-Naming:
-
-Service and provider names are always camel case, and do not include service or provider in the name. 
 
 **[⬆ back to top](#table-of-contents)**
-
 
 ## Function Context
 
