@@ -340,7 +340,7 @@
     var isJedi = luke.jedi;
     ```
 
-  - Use subscript notation `[]` when accessing properties with a variable.
+  - Use subscript notation `[]` when accessing properties with a variable or computed properties in ES6.
 
     ```javascript
     var luke = {
@@ -353,6 +353,31 @@
     }
 
     var isJedi = getProp('jedi');
+    
+    // ES6
+    var age = luke['ag' + 'e'];
+    ```
+  - Avoid using [reserved words](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords) as property names. They will work in modern browsers (unlike IE8) but cause confusion. Find a good synonym instead (but don't get to creative).
+  
+
+    ```javascript
+    // bad
+    var luke = {
+      typeof: 'jedi',
+      age: 28
+    };
+
+    // bad
+    var luke = {
+      brand: 'jedi',
+      age: 28
+    };
+
+    // good
+    var luke = {
+      group: 'jedi',
+      age: 28
+    };
     ```
 
 **[⬆ back to top](#table-of-contents)**
