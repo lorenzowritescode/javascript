@@ -1395,9 +1395,11 @@ Service and provider names are always camel case, and do not include service or 
 
 ## Angular Forms
 
-Angular's true power shines through when creating complex forms. 
+Angular's power shines through when creating complex forms. We have made some additions to handle validation and error handling.
+
+
   ```HTML
-    <div ng-form="orderSetupForm">
+    <div ng-form="orderSetupForm" ng-submit="placeOrder()">
       <h3>Order Setup</h3>
       
       <div ono-form-errors></div>
@@ -1411,6 +1413,10 @@ Angular's true power shines through when creating complex forms.
       <button ng-click="goBack()">cancel</button>
     </div>
   ```
+
+[ng-form] is an angular directive that we have extended. It creates a form object in scope which allows you to check the validity of the form and add to it, at any point within that scope. 'orderSetupForm.$submit()' triggers the form validation, and if that is successful, calls placeOrder on the current scope. If [ng-submit] is not used, the form directive will look for 'orderSetupFormSubmit' on scope to submit the form. 
+
+The function called by the form directive needs to return a promise object. This is how the form directive handles any errors. 
 
 **[⬆ back to top](#table-of-contents)**
 
