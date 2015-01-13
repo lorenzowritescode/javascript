@@ -1,5 +1,5 @@
 
-# JavaScript Style Guide
+# ONOSYS JavaScript Style Guide
 
 *A mostly reasonable approach to JavaScript*
 
