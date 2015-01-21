@@ -848,15 +848,6 @@
   - Leading commas: **Nope.**
 
     ```javascript
-    // bad
-    var once
-      , upon
-      , aTime;
-
-    // good
-    var once,
-        upon,
-        aTime;
 
     // bad
     var hero = {
